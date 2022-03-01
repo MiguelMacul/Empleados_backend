@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/CSS/principal.css" rel="stylesheet">
+    <title>Curso PHP puro Softura</title>
+</head>
+<body>
+    <div class="container">
+        <br><br><br><br>
+        <br><br>
+        <div id="mensajes_sistema"></div>
+        <div class="row">
+           
+            <div class='col-md-3'></div>
+            <div class="col-md-6">
+                <div class="login-box well">
+                    <form >
+                        <h2>Curso PHP puro Softura</h2>
+                        <h3>Login</h3>
+                        <div class="form-group">
+                            <label for="username-email">E-mail</label>
+                            <input value='' id="username-email" placeholder="E-mail" type="email"
+                                class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input id="password" value='' placeholder="Password" type="password" class="form-control" />
+                        </div>
+                        <div class="input-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input  id="login-remember" type="checkbox" name="remember" value="1" > Remember me
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input class="btn btn-dark" id="boton-login" type="button" class="btn btn-default btn-login-submit btn-block m-t-md"
+                                value="Login" />
+                        </div>
+                        <span class='text-center'><a href="/resetting/request" class="text-sm">Forgot
+                                Password?</a></span>
+                        <div class="form-group">
+                            <p class="text-center m-t-xs text-sm">Do not have an account?</p>
+                            <a href="/register/" class="btn btn-default btn-block m-t-md">Create an account</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <div class='col-md-3'></div>
+        </div>
+    </div>
+    <!-- scripts js -->
+    <script src="./assets/JS/jquery-3.6.0.min.js"></script>
+    <script src="./assets/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="./assets/JS/jqueryval/jquery.validate.js"></script>
+    <script src="./assets/JS/jqueryval/localization/messages_es.js"></script>
+    <script src="./assets/JS/variables.js"></script>
+    <script src="./assets/JS/usuarios/usuario.js"></script>
+</body>
+
+</html>

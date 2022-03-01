@@ -1,0 +1,156 @@
+{
+	"info": {
+		"_postman_id": "30a66de7-cafe-419a-8ba3-9909cb4e265e",
+		"name": "cap_softura_php",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Empleado",
+			"item": [
+				{
+					"name": "GetEmpleados",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\":\"Miguel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{path_base}}?peticion=empleado&funcion=listado",
+							"host": [
+								"{{path_base}}"
+							],
+							"query": [
+								{
+									"key": "peticion",
+									"value": "empleado"
+								},
+								{
+									"key": "funcion",
+									"value": "listado"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostEmpleado",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "body",
+									"value": "miguel",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{path_base}}?peticion=empleado&funcion=agregar",
+							"host": [
+								"{{path_base}}"
+							],
+							"query": [
+								{
+									"key": "peticion",
+									"value": "empleado"
+								},
+								{
+									"key": "funcion",
+									"value": "agregar"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteEmpleado",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{path_base}}?peticion=empleado&funcion=eliminar",
+							"host": [
+								"{{path_base}}"
+							],
+							"query": [
+								{
+									"key": "peticion",
+									"value": "empleado"
+								},
+								{
+									"key": "funcion",
+									"value": "eliminar"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateEmpleado",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{path_base}}?peticion=empleado&funcion=actualizar",
+							"host": [
+								"{{path_base}}"
+							],
+							"query": [
+								{
+									"key": "peticion",
+									"value": "empleado"
+								},
+								{
+									"key": "funcion",
+									"value": "actualizar"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "path_base",
+			"value": "http://127.0.0.1/Empleados_backend/backend/server.php",
+			"type": "string"
+		}
+	]
+}

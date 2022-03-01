@@ -23,14 +23,20 @@ class ModeloBase extends BaseDeDatos
         return $this->consultaRegistros($this->tabla,$condiciones);
     }
 
-    public function registroEmpleado($valores = array()){
-        return $this->insertarRegistro($this->tabla, $valores);
+    public function insertar($valoresInsert){
+        return $this->insertarRegistro($this->tabla,$valoresInsert);
     }
 
-    public function eliminar($valores = array()){
-        return $this->eliminarRegistro($this->tabla, $valores);
+    public function actualizar($valoresUpdate,$condicionales){
+        return $this->actualizarRegistro($this->tabla,$valoresUpdate,$condicionales);
     }
-    public function update($valores = array(), $condiciones = array()){
-        return $this->actualizarRegistro($this->tabla, $valores, $condiciones);
+
+    public function obtenerElemento($condiciones){
+        return $this->consultaRegistroById($this->tabla,$condiciones);
     }
+
+    public function eliminar($condiciones){
+        return $this->eliminarRegistro($this->tabla,$condiciones);
+    }
+
 }

@@ -6,6 +6,7 @@ class BaseDeDatos{
 
     private $dbConfig;
     private $mysqli;
+    private $errores;
 
     function __construct()
     {
@@ -18,13 +19,14 @@ class BaseDeDatos{
                 $this->dbConfig['base_datos'],
                 $this->dbConfig['puerto']
             );
-            if (!$this->mysqli->set_charset("utf8")) {// Condicional para asignar utf-8
-                echo 'Error en codificacion';die;
-         }
             if($this->mysqli->connect_errno){
+                $this->errores = $this->mysqli->error_list;
                 echo 'Error en la conexion base de datos';die;
+            }else{
+                $this->errores = array();
             }
         }catch (Exception $ex){
+            $this->errores = $this->mysqli->error_list;
             echo 'Error en la conexion de BD';die;
         }
     }
@@ -39,6 +41,17 @@ class BaseDeDatos{
         return $datos;
     }
 
+    public function consultaRegistroById($tabla,$condicionales = array()){
+        $condiciones = $this->obtenerCondicionalesWhereAnd($condicionales);
+        $query = $this->mysqli->query("select * from ".$tabla.$condiciones);
+        $dato= array();
+        while($registro = $query->fetch_assoc()){
+            $dato[] = $registro;
+        }
+      
+        return $dato;
+    }
+
     /**
      * @param $tabla
      * @param $valoresInsert
@@ -46,24 +59,57 @@ class BaseDeDatos{
      * array('nombre_columna1' => valor, 'nombre_columna' => valor)
      */
     public function insertarRegistro($tabla,$valoresInsert){
-        $campos=$this->obtenerColumnasInsert($valoresInsert);
-        $valores=$this->obtenerValuesInsert($valoresInsert);
-        $query="INSERT INTO $tabla $campos VALUES $valores";
-        $this->mysqli->query($query);
-        return $valoresInsert;
-    
+        $columnasValoresSQL = $this->obtengaClavesYvaloresInsert($valoresInsert);
+        $consultaInsertSQL = "INSERT INTO ".$tabla."(".$columnasValoresSQL['columnas'].") VALUES (".$columnasValoresSQL['valores'].")";
+        try{
+            $query = $this->mysqli->query($consultaInsertSQL);
+            if($query !== true){
+                return false;
+            }return true;
+        }catch (Exception $ex){
+            return false;
+        }
     }
 
     public function actualizarRegistro($tabla,$valoresUpdate,$condicionales){
-        $campos=$this->obtenerCamporvalores($valoresUpdate);
-        $condiciones = $this->obtenerCondicionalesWhereAnd($condicionales);
-        $query="UPDATE $tabla SET $campos $condiciones";
-        $this->mysqli->query( $query);
+        try{
+            $sqlCamposUpdate = $this->obtenerColumnaValorUpdate($valoresUpdate);
+            $condicionesSQL = $this->obtenerCondicionalesWhereAnd($condicionales);
+            $consultaUpdateSQL = "UPDATE $tabla SET $sqlCamposUpdate $condicionesSQL";
+            $query = $this->mysqli->query($consultaUpdateSQL);
+            if($query !== true){
+                $this->errores = $this->mysqli->error_list;
+                return false;
+            }return true;
+        }catch (Exception $ex){
+            return false;
+        }
     }
 
-    public function eliminarRegistro($tabla,$id){
-        $query="DELETE FROM $tabla WHERE id=$id";
-        $this->mysqli->query($query);
+    public function eliminarRegistro($tabla,$condicionales){
+        try{
+            $condicionesSQL = $this->obtenerCondicionalesWhereAnd($condicionales);
+            $consultaDeleteSQL = "DELETE FROM $tabla $condicionesSQL";
+            $query = $this->mysqli->query($consultaDeleteSQL);
+            if($query !== true){
+                $this->errores = $this->mysqli->error_list;
+                return false;
+            }return true;
+        }catch (Exception $ex){
+            return false;
+        }
+    }
+
+    public function ultimoID(){
+        return $this->mysqli->insert_id;
+    }
+
+    public function getErrores(){
+        $msgError = array();
+        foreach ($this->errores as $e){
+            $msgError[] = "Codigo error: ".$e['errno']." Detalle/Explicacion: ".$e['error'];
+        }
+        return $msgError;
     }
 
     /**  functiones privadas
@@ -83,40 +129,45 @@ class BaseDeDatos{
         return $condiciones;
     }
 
-    private function obtenerCamporvalores($condicionales){
-        $condiciones='';
-        foreach ($condicionales as $columna => $valor){
-            $condiciones .= " $columna = '$valor',";
+    /**
+     * @param $valoresInsert
+     * array(array('nombre_columna1'=> valor1), array('nombre_columna2'=> valor2),...)
+     */
+    private function obtengaClavesYvaloresInsert($valoresInsert){
+        $retorno = array();
+        $nombresColumnas = "";//nombre,paterno,materno,....
+        $valoresColumnas = "";//'enrique','corona','ricaño',...
+        $iteracionCampos = 1;
+        $maxItCampo = sizeof($valoresInsert);
+        foreach ($valoresInsert as $columna => $valor){
+            $nombresColumnas .= $columna;
+            $valoresColumnas .= "'".$valor."'";
+            if($iteracionCampos < $maxItCampo){
+                $nombresColumnas .= ',';
+                $valoresColumnas .= ',';
+            }
+            $iteracionCampos++;
         }
-        $condiciones= substr($condiciones,0,strlen($condiciones)-1);
-        return $condiciones;
+        $retorno['columnas'] = $nombresColumnas;
+        $retorno['valores'] = $valoresColumnas;
+        return $retorno;
     }
 
     /**
-     * @param $tabla
-     * @param $condicionales
-     * @return string
-     * funcion que recibe un arragle de condiciones para los SQL where
      * array(array('nombre_columna1'=> valor1), array('nombre_columna2'=> valor2),...)
      */
-    private function obtenerColumnasInsert($valores = array()){
-        $campos = "(";
-        foreach ($valores as $columna => $valor){
-            $campos .= "".$columna.",";
+    private function obtenerColumnaValorUpdate($camposUpdate){
+        $camposValorSQL = '';
+        $iteracionCampos = 1;
+        $maxItCampo = sizeof($camposUpdate);
+        foreach ($camposUpdate as $columna => $valor){
+            $camposValorSQL .= " $columna = '$valor'";
+            if($iteracionCampos < $maxItCampo){
+                $camposValorSQL .= ',';
+            }
+            $iteracionCampos++;
         }
-        $campos= substr($campos,0,strlen($campos)-1);
-        $campos .= ")";
-        return $campos;
+        return $camposValorSQL;
     }
 
-
-    private function obtenerValuesInsert($valores  = array()){
-        $campos = "(";
-        foreach ($valores as $columna => $valor){
-            $campos .= "'".$valor."',";
-        }
-        $campos= substr($campos,0,strlen($campos)-1);
-        $campos .= ")";
-        return $campos;
-    }
 }
