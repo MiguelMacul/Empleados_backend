@@ -83,7 +83,7 @@ var Empleados = {
     listado_empleados : function(){
         $('#tbodyTableroEmpleados').html('<tr><td colspan="6" style="text-align: center"><span class="spinner-border"></span>Procesando Datos</td></tr>');
         $.ajax({
-            type : 'post',
+            type : 'GET',
             url : URL_BACKEND + 'peticion=empleado&funcion=listado', // url de consumo del servicio
             data : {},
             dataType : 'json',
